@@ -1,0 +1,25 @@
+{
+  "spec": "0.1",
+  "id": "classify_reply",
+  "name": "按是否包含“退款”分别回复",
+  "intent": "给我一段客户留言，如果里面提到“退款”就写一句安抚回复，否则写一句感谢回复",
+  "inputs":  { "message": { "type": "string", "description": "客户留言" } },
+  "outputs": { "reply":   { "type": "string", "description": "回复" } },
+  "nodes": [
+    { "id": "has_refund", "kind": "module", "module": "logic.compare@0", "config": { "op": "contains", "b": "退款" } },
+    { "id": "branch", "kind": "if" },
+    { "id": "soothe", "kind": "module", "module": "llm.think@0", "config": { "instruction": "客户想退款，写一句礼貌的安抚回复" } },
+    { "id": "thank", "kind": "module", "module": "llm.think@0", "config": { "instruction": "写一句感谢客户留言的回复" } },
+    { "id": "join", "kind": "merge" }
+  ],
+  "edges": [
+    { "from": "$in.message",      "to": "has_refund.a" },
+    { "from": "has_refund.result", "to": "branch.condition" },
+    { "from": "$in.message",      "to": "branch.value" },
+    { "from": "branch.then",      "to": "soothe.text" },
+    { "from": "branch.else",      "to": "thank.text" },
+    { "from": "soothe.answer",    "to": "join.a" },
+    { "from": "thank.answer",     "to": "join.b" },
+    { "from": "join.value",       "to": "$out.reply" }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "workflow.schema.json",
+  "title": "工作流图 v0.2",
+  "description": "结构约束。类型兼容、连线有效性、无环等语义规则由 tools/validate.py 检查。也用于约束本地模型输出格式。",
+  "type": "object",
+  "required": ["spec", "id", "name", "intent", "inputs", "outputs", "nodes", "edges"],
+  "additionalProperties": false,
+  "properties": {
+    "spec": { "enum": ["0.1", "0.2"] },
+    "id": { "$ref": "#/$defs/ident" },
+    "name": { "type": "string", "minLength": 1 },
+    "intent": { "type": "string" },
+    "inputs": { "$ref": "#/$defs/ports" },
+    "outputs": { "$ref": "#/$defs/ports" },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } },
+    "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } },
+    "layout": { "$ref": "#/$defs/layout" }
+  },
+  "$defs": {
+    "layout": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object", "required": ["x", "y"],
+        "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+      }
+    },
+    "ident": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "type": {
+      "type": "string",
+      "pattern": "^(string|number|integer|boolean|object|file|any|list<.+>)$"
+    },
+    "port": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "$ref": "#/$defs/type" },
+        "description": { "type": "string" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 8 },
+        "required": { "type": "boolean" },
+        "default": {}
+      }
+    },
+    "ports": { "type": "object", "additionalProperties": { "$ref": "#/$defs/port" } },
+    "body": {
+      "type": "object",
+      "required": ["inputs", "outputs", "nodes", "edges"],
+      "additionalProperties": false,
+      "properties": {
+        "inputs": { "$ref": "#/$defs/ports" },
+        "outputs": { "$ref": "#/$defs/ports" },
+        "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } },
+        "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } },
+        "layout": { "$ref": "#/$defs/layout" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "from": { "type": "string", "pattern": "^(\\$in|[a-z][a-z0-9_]*)\\.[a-z][a-z0-9_]*$" },
+        "to":   { "type": "string", "pattern": "^(\\$out\\.[a-z][a-z0-9_]*|[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)?)$", "description": "节点id.端口 为数据线；只写节点id 为控制线（起点须为 if 的 then/else）" }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ident" },
+        "label": { "type": "string" },
+        "kind": { "enum": ["module", "if", "merge", "foreach", "subflow"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "kind": { "const": "module" } } },
+          "then": { "required": ["module"],
+                    "properties": { "module": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+@[0-9]+$" },
+                                    "config": { "type": "object" } } } },
+        { "if": { "properties": { "kind": { "const": "merge" } } },
+          "then": { "properties": { "ports": { "type": "array", "items": { "$ref": "#/$defs/ident" }, "minItems": 2 } } } },
+        { "if": { "properties": { "kind": { "const": "foreach" } } },
+          "then": { "required": ["body", "max_items"],
+                    "properties": { "body": { "$ref": "#/$defs/body" },
+                                    "max_items": { "type": "integer", "minimum": 1 } } } },
+        { "if": { "properties": { "kind": { "const": "subflow" } } },
+          "then": { "oneOf": [ { "required": ["ref"] }, { "required": ["body"] } ],
+                    "properties": { "ref": { "type": "string" }, "body": { "$ref": "#/$defs/body" } } } }
+      ]
+    }
+  }
+}

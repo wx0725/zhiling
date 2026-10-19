@@ -1,0 +1,28 @@
+{
+  "spec": "0.2",
+  "id": "score_message",
+  "name": "按分数写一句话",
+  "intent": "给我一个整数分数，大于等于 60 就写一句祝贺的话，否则写一句鼓励的话",
+  "inputs":  { "score":   { "type": "integer", "description": "分数" } },
+  "outputs": { "message": { "type": "string",  "description": "祝贺或鼓励的话" } },
+  "nodes": [
+    { "id": "passed", "kind": "module", "module": "logic.compare@0", "label": "及格了吗", "config": { "op": "ge", "b": 60 } },
+    { "id": "branch", "kind": "if", "label": "及格？" },
+    { "id": "score_text", "kind": "module", "module": "text.format@0", "label": "分数转文字", "config": { "template": "分数：{value}" } },
+    { "id": "congratulate", "kind": "module", "module": "llm.think@0", "label": "祝贺", "config": { "instruction": "根据分数写一句简短的祝贺的话" } },
+    { "id": "encourage", "kind": "module", "module": "llm.think@0", "label": "鼓励", "config": { "instruction": "根据分数写一句简短的鼓励的话" } },
+    { "id": "join", "kind": "merge", "label": "合并" }
+  ],
+  "edges": [
+    { "from": "$in.score",           "to": "passed.a" },
+    { "from": "passed.result",       "to": "branch.condition" },
+    { "from": "branch.then",         "to": "congratulate" },
+    { "from": "branch.else",         "to": "encourage" },
+    { "from": "$in.score",           "to": "score_text.value" },
+    { "from": "score_text.text",     "to": "congratulate.text" },
+    { "from": "score_text.text",     "to": "encourage.text" },
+    { "from": "congratulate.answer", "to": "join.a" },
+    { "from": "encourage.answer",    "to": "join.b" },
+    { "from": "join.value",          "to": "$out.message" }
+  ]
+}

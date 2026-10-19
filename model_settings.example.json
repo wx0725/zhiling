@@ -1,0 +1,27 @@
+{
+  "_说明": "复制成 model_settings.json 后按自己的电脑修改（那个文件不进 git）。每一项都可以省略。",
+  "model": "ollama://127.0.0.1:11434/qwen3:8b",
+  "think_model": "qwen3:8b",
+  "ollama": [
+    {
+      "url": "http://127.0.0.1:11435",
+      "start": {
+        "OLLAMA_MODELS": "D:\\models\\ollama",
+        "CUDA_VISIBLE_DEVICES": "0",
+        "OLLAMA_KEEP_ALIVE": "10m"
+      }
+    }
+  ],
+  "apis": {
+    "my-proxy": {
+      "name": "我的中转",
+      "base": "https://example.com/v1",
+      "key_env": "MY_PROXY_KEY",
+      "models": [
+        "some-model"
+      ],
+      "json_mode": false
+    }
+  },
+  "clis": {}
+}

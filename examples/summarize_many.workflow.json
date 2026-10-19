@@ -1,0 +1,41 @@
+{
+  "spec": "0.1",
+  "id": "summarize_many",
+  "name": "批量总结网页（失败的说明原因）",
+  "intent": "给我一组网址，每个网址输出一句中文总结；打不开的网址说明打不开",
+  "inputs":  { "urls":      { "type": "list<string>", "description": "网址列表" } },
+  "outputs": { "summaries": { "type": "list<string>", "description": "与网址一一对应的总结" } },
+  "nodes": [
+    { "id": "each", "kind": "foreach", "max_items": 20, "label": "逐个网址",
+      "body": {
+        "inputs":  { "item":   { "type": "string", "description": "当前网址" } },
+        "outputs": { "result": { "type": "string", "description": "这个网址的总结" } },
+        "nodes": [
+          { "id": "fetch", "kind": "module", "module": "web.fetch@0", "label": "抓取" },
+          { "id": "ok", "kind": "module", "module": "logic.compare@0", "label": "状态码是 200 吗",
+            "config": { "op": "eq", "b": 200 } },
+          { "id": "branch", "kind": "if", "label": "成功？" },
+          { "id": "summarize", "kind": "module", "module": "llm.think@0", "label": "总结",
+            "config": { "instruction": "用一句话中文总结以下网页内容，忽略 HTML 标签" } },
+          { "id": "explain", "kind": "module", "module": "llm.think@0", "label": "说明失败",
+            "config": { "instruction": "这个网页没有正常打开。根据下面返回的内容，用一句中文说明原因" } },
+          { "id": "join", "kind": "merge", "label": "合并" }
+        ],
+        "edges": [
+          { "from": "$in.item",          "to": "fetch.url" },
+          { "from": "fetch.status",      "to": "ok.a" },
+          { "from": "ok.result",         "to": "branch.condition" },
+          { "from": "fetch.text",        "to": "branch.value" },
+          { "from": "branch.then",       "to": "summarize.text" },
+          { "from": "branch.else",       "to": "explain.text" },
+          { "from": "summarize.answer",  "to": "join.a" },
+          { "from": "explain.answer",    "to": "join.b" },
+          { "from": "join.value",        "to": "$out.result" }
+        ]
+      } }
+  ],
+  "edges": [
+    { "from": "$in.urls",     "to": "each.items" },
+    { "from": "each.results", "to": "$out.summaries" }
+  ]
+}

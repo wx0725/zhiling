@@ -1,0 +1,26 @@
+{
+  "id": "text.to_number",
+  "version": "0.1.0",
+  "name": "转成数字",
+  "description": "把一段文字转成数字，输出数字 number，之后就能比较大小、求和、排序。能认出常见写法：千分位“1,234.5”、带货币符号或单位“￥12”“12元”“$3.5”、负数“-3”、百分数“50%”（percent 为真时转成 0.5，为假时转成 50）、“3.5万”“2亿”；全角数字和空格也行。本身已经是数字的原样输出。只处理一个值：要把一整个列表转成数字列表请用“转数字列表”（list.to_numbers）。转不了（例如“约十二”“12-15”“abc”）报 not_number 并说明是哪段文字。典型接法：取字段或查找匹配得到“￥1,299”这样的文字 → 本模块 → 比较。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "value":   { "label": "文字", "type": "any", "required": true, "description": "要转成数字的文字，例如 \"1,234.5\" \"￥12\" \"50%\"；已经是数字也可以" },
+    "percent": { "label": "百分比", "type": "boolean", "required": false, "default": true, "description": "带 % 的文字怎么转：为真时 50% → 0.5（默认），为假时 50% → 50" }
+  },
+  "outputs": {
+    "number": { "label": "数字", "type": "number", "description": "转出来的数字；没有小数部分时是整数" }
+  },
+  "errors": [
+    { "code": "not_number", "when": "文字里不是一个能认出的数字，例如空文字、“约十二”、“12-15”、真假值" }
+  ],
+  "examples": [
+    { "title": "带千分位的金额", "input": { "value": "￥1,234.5" }, "output": { "number": 1234.5 } },
+    { "title": "带单位的整数", "input": { "value": "12元" }, "output": { "number": 12 } },
+    { "title": "百分数转成小数", "input": { "value": "50%" }, "output": { "number": 0.5 } },
+    { "title": "百分数只去掉 %", "input": { "value": "50%", "percent": false }, "output": { "number": 50 } },
+    { "title": "以万为单位", "input": { "value": "3.5万" }, "output": { "number": 35000 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

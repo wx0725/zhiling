@@ -1,0 +1,25 @@
+{
+  "id": "text.split",
+  "version": "0.1.0",
+  "name": "拆分文字",
+  "description": "把一段文字按分隔符拆成文字列表，默认按换行拆（一行一项）。常接在 foreach 前面，对每一行、每一句分别处理；也可以拆完后用列表统计数一共有几项。默认去掉每项首尾空白并丢掉空项。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "text":       { "label": "文字", "type": "string",  "required": true,  "description": "要拆分的文字" },
+    "separator":  { "label": "分隔", "type": "string",  "required": false, "default": "\n", "description": "分隔符，默认换行；例如 \",\" 或 \"。\"" },
+    "trim":       { "label": "去空白", "type": "boolean", "required": false, "default": true, "description": "是否去掉每项首尾的空白" },
+    "skip_empty": { "label": "丢空项", "type": "boolean", "required": false, "default": true, "description": "是否丢掉空项" }
+  },
+  "outputs": {
+    "items": { "label": "各项", "type": "list<string>", "description": "拆出来的各项，按原顺序" }
+  },
+  "errors": [
+    { "code": "empty_separator", "when": "分隔符是空的" }
+  ],
+  "examples": [
+    { "title": "按行拆", "input": { "text": "第一行\n第二行\n\n第三行" }, "output": { "items": ["第一行", "第二行", "第三行"] } },
+    { "title": "按逗号拆", "input": { "text": "苹果, 香蕉,橙子", "separator": "," }, "output": { "items": ["苹果", "香蕉", "橙子"] } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

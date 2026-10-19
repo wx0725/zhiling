@@ -1,0 +1,32 @@
+{
+  "id": "llm.think",
+  "version": "0.1.0",
+  "name": "思考",
+  "description": "让本地大模型按照指令处理一段文本，返回文字回答。适合总结、翻译、改写、分类、提取要点等需要理解语言的工作。不能上网、不能读文件、不记得上一次调用；需要的材料都要通过 text 传进来。回答是自由文本，不保证固定格式。",
+  "category": "思考",
+  "side_effects": "none",
+  "inputs": {
+    "instruction": { "label": "指令", "type": "string", "required": true,  "description": "要模型做什么，例如“用三句话中文总结以下内容”" },
+    "text":        { "label": "材料", "type": "string", "required": false, "default": "", "description": "要处理的材料，可为空" },
+    "model":       { "label": "模型", "type": "string", "required": false, "default": "", "description": "Ollama 中的模型名；留空用设置里的默认模型（没设就用已装的第一个）" },
+    "temperature": { "label": "随机程度", "type": "number", "required": false, "default": 0.2, "description": "随机程度，0 最稳定" },
+    "max_chars":   { "label": "最多字数", "type": "integer", "required": false, "default": 20000, "description": "text 超过此长度时截断，避免超出模型上下文" }
+  },
+  "outputs": {
+    "answer": { "label": "回答", "type": "string", "description": "模型的回答" }
+  },
+  "errors": [
+    { "code": "service_unavailable", "when": "本机 Ollama 服务没有运行" },
+    { "code": "model_not_found",     "when": "指定的模型没有安装" },
+    { "code": "empty_answer",        "when": "模型返回了空内容" }
+  ],
+  "examples": [
+    { "title": "总结一段文字",
+      "input":  { "instruction": "用一句话中文总结", "text": "Example Domain. This domain is for use in illustrative examples in documents." },
+      "output": { "answer": "这是一个专门用于文档示例的域名。" } },
+    { "title": "判断语言",
+      "input":  { "instruction": "这段文字是什么语言？只回答语言名称", "text": "Bonjour tout le monde" },
+      "output": { "answer": "法语" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 180 }
+}

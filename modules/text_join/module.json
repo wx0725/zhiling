@@ -1,0 +1,23 @@
+{
+  "id": "text.join",
+  "version": "0.1.0",
+  "name": "合成文字",
+  "description": "把一个列表的每一项转成文字后连接成一整段文字，例如把循环得到的多条总结合成一段，再交给思考模块做整体总结。可以选择在每项前加序号。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "items":     { "label": "列表", "type": "list<any>", "required": true,  "description": "要合并的列表" },
+    "separator": { "label": "分隔", "type": "string",    "required": false, "default": "\n", "description": "项与项之间的分隔，默认换行" },
+    "numbered":  { "label": "加序号", "type": "boolean",   "required": false, "default": false, "description": "是否在每项前加“1. ”这样的序号" }
+  },
+  "outputs": {
+    "text": { "label": "文字", "type": "string", "description": "合并后的文字" }
+  },
+  "errors": [],
+  "examples": [
+    { "title": "换行合并", "input": { "items": ["第一条", "第二条"] }, "output": { "text": "第一条\n第二条" } },
+    { "title": "加序号", "input": { "items": ["甲", "乙"], "numbered": true }, "output": { "text": "1. 甲\n2. 乙" } },
+    { "title": "自定义分隔", "input": { "items": [1, 2, 3], "separator": "、" }, "output": { "text": "1、2、3" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

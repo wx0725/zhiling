@@ -1,0 +1,19 @@
+{
+  "spec": "0.1",
+  "id": "summarize_page",
+  "name": "抓取网页并总结",
+  "intent": "给我一个网址，输出这个网页的三句话中文总结",
+  "inputs":  { "url":     { "type": "string", "description": "网址" } },
+  "outputs": { "summary": { "type": "string", "description": "三句话中文总结" } },
+  "nodes": [
+    { "id": "fetch", "kind": "module", "module": "web.fetch@0", "label": "抓取网页" },
+    { "id": "think", "kind": "module", "module": "llm.think@0", "label": "总结",
+      "config": { "instruction": "用三句话中文总结以下网页内容，忽略 HTML 标签" } }
+  ],
+  "edges": [
+    { "from": "$in.url",      "to": "fetch.url" },
+    { "from": "fetch.text",   "to": "think.text" },
+    { "from": "think.answer", "to": "$out.summary" }
+  ],
+  "layout": { "fetch": { "x": 0, "y": 0 }, "think": { "x": 260, "y": 0 } }
+}

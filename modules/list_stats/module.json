@@ -1,0 +1,27 @@
+{
+  "id": "list.stats",
+  "version": "0.1.0",
+  "name": "列表统计",
+  "description": "对一个列表做一种统计，输出一个数字 value；另外总会输出整数 count（列表有几项），只想数个数时直接用 count 即可。op 可选：count 数个数（任何列表都可以）、sum 求和、mean 平均值、max 最大值、min 最小值（这四种要求每一项都是数字，文字形式的数字不行）。空列表的个数和总和都是 0，求平均、最大、最小会报错。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "items": { "label": "列表", "type": "list<any>", "required": true, "description": "要统计的列表" },
+    "op":    { "label": "统计方式", "type": "string",    "required": true, "description": "统计方式：count sum mean max min" }
+  },
+  "outputs": {
+    "value": { "label": "结果", "type": "number",  "description": "按 op 统计的结果" },
+    "count": { "label": "个数", "type": "integer", "description": "列表有几项（整数，不受 op 影响）" }
+  },
+  "errors": [
+    { "code": "invalid_op",    "when": "op 不在支持的列表里" },
+    { "code": "not_number",    "when": "求和、平均、最大、最小时列表里有不是数字的项" },
+    { "code": "empty_list",    "when": "对空列表求平均、最大或最小" }
+  ],
+  "examples": [
+    { "title": "求平均", "input": { "items": [80, 90, 70], "op": "mean" }, "output": { "value": 80, "count": 3 } },
+    { "title": "数个数", "input": { "items": ["a", "b", "c"], "op": "count" }, "output": { "value": 3, "count": 3 } },
+    { "title": "求和", "input": { "items": [1.5, 2, 3], "op": "sum" }, "output": { "value": 6.5, "count": 3 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

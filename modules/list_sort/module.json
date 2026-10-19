@@ -1,0 +1,34 @@
+{
+  "id": "list.sort",
+  "version": "0.1.0",
+  "name": "排序列表",
+  "description": "把一个列表排好顺序，输出排好的列表和个数；也可以顺便去掉重复项。order：asc 从小到大（默认）、desc 从大到小、none 不排序只保持原顺序（配合 unique 只做去重）。列表里是对象（例如读取表格得到的每一行）时，在 field 写按哪个字段排，例如“分数”，多层字段用点隔开如“user.age”。by：auto 自动（全是数字按数字比、全是文字按文字比，默认）、number 按数字比（“1,200”这样的文字也会当成数字）、text 按文字比。文字按“自然顺序”：文件2 排在 文件10 前面，英文不分大小写；中文按字符编码排，不是按拼音或笔画。unique 为真时去掉重复项：按排序依据判断重复（写了 field 就是该字段相同算重复），保留第一次出现的那项。相同的值保持原来的先后顺序。典型接法：读取表格 → 本模块按“金额”降序 → 取前几行交给思考。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "items":  { "label": "列表", "type": "list<any>", "required": true, "description": "要排序的列表" },
+    "order":  { "label": "顺序", "type": "string", "required": false, "default": "asc", "description": "asc 从小到大（默认）、desc 从大到小、none 不排序" },
+    "field":  { "label": "按字段", "type": "string", "required": false, "default": "", "description": "列表里是对象时按哪个字段排，例如 分数 或 user.age；留空表示按每一项本身排" },
+    "by":     { "label": "比较方式", "type": "string", "required": false, "default": "auto", "description": "auto 自动（默认）、number 按数字、text 按文字" },
+    "unique": { "label": "去重", "type": "boolean", "required": false, "default": false, "description": "为真时去掉重复项，保留第一次出现的那项" }
+  },
+  "outputs": {
+    "items": { "label": "排好的", "type": "list<any>", "description": "排好顺序（以及去重）后的列表" },
+    "count": { "label": "个数", "type": "integer", "description": "输出列表有几项" }
+  },
+  "errors": [
+    { "code": "invalid_option", "when": "order 不是 asc/desc/none，或 by 不是 auto/number/text" },
+    { "code": "missing_field", "when": "写了 field，但某一项没有这个字段（说明里会写第几项）" },
+    { "code": "not_comparable", "when": "by 为 auto 时，要比较的值里混着数字和文字等不同类型" },
+    { "code": "not_number", "when": "by 为 number 时，某一项不是数字也不是数字文字" }
+  ],
+  "examples": [
+    { "title": "数字从大到小", "input": { "items": [3, 10, 1], "order": "desc" }, "output": { "items": [10, 3, 1], "count": 3 } },
+    { "title": "文件名按自然顺序", "input": { "items": ["文件10", "文件2", "文件1"] }, "output": { "items": ["文件1", "文件2", "文件10"], "count": 3 } },
+    { "title": "表格行按分数降序",
+      "input": { "items": [{ "名字": "小王", "分数": 80 }, { "名字": "小李", "分数": 95 }, { "名字": "小张", "分数": 88 }], "field": "分数", "order": "desc" },
+      "output": { "items": [{ "名字": "小李", "分数": 95 }, { "名字": "小张", "分数": 88 }, { "名字": "小王", "分数": 80 }], "count": 3 } },
+    { "title": "只去重、不改顺序", "input": { "items": ["b", "a", "b", "c", "a"], "order": "none", "unique": true }, "output": { "items": ["b", "a", "c"], "count": 3 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

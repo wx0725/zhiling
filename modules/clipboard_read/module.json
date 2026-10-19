@@ -1,0 +1,24 @@
+{
+  "id": "clipboard.read",
+  "version": "0.1.0",
+  "name": "读剪贴板",
+  "description": "读出剪贴板里现在的文字（就是你刚刚“复制”的内容），输出文字和字数。剪贴板里是图片、文件或者是空的时，输出空文字、字数为 0，不报错。只读文字，不读图片和文件；只读不改。目前只支持 Windows。典型接法：先在别处复制一段文字 → 运行工作流：本模块 → 思考（翻译、总结、改写）→ 写剪贴板，结果直接粘贴就能用。",
+  "category": "获取",
+  "side_effects": "read",
+  "inputs": {
+    "max_chars": { "label": "最多字数", "type": "integer", "required": false, "default": 200000, "description": "最多读取的字数，超出部分丢弃" }
+  },
+  "outputs": {
+    "text":  { "label": "文字", "type": "string", "description": "剪贴板里的文字，换行统一成 \\n；没有文字时为空" },
+    "chars": { "label": "字数", "type": "integer", "description": "读到的字数" }
+  },
+  "errors": [
+    { "code": "unsupported_platform", "when": "不是 Windows 系统" },
+    { "code": "clipboard_busy", "when": "剪贴板正被别的程序占用，等了约 1 秒还打不开" }
+  ],
+  "examples": [
+    { "title": "读出刚复制的一段话（假设剪贴板里是“你好，世界”）", "input": {}, "output": { "text": "你好，世界", "chars": 5 } },
+    { "title": "只要前 2 个字（同上）", "input": { "max_chars": 2 }, "output": { "text": "你好", "chars": 2 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 10 }
+}

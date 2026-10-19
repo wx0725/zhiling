@@ -1,0 +1,25 @@
+{
+  "id": "text.format",
+  "version": "0.2.0",
+  "name": "转成文字",
+  "description": "把任意一个值（数字、真假、列表、对象或文本）按模板转成一段文字。模板里写 {value} 的地方会被替换成这个值；数字原样写出，真假写成“是/否”，列表和对象写成 JSON。用于把非文本的数据交给只接受文本的模块（例如思考模块），或给数据加上说明文字。不接 value 时直接输出模板本身，可用来产生一段固定文字（例如“网页打不开”）。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "template": { "label": "模板", "type": "string", "required": false, "default": "{value}", "description": "模板，{value} 处替换为输入值；不写则只输出值本身" },
+    "value":    { "label": "值", "type": "any",    "required": false, "default": null, "description": "要转成文字的值；不接则输出模板本身" }
+  },
+  "outputs": {
+    "text": { "label": "文字", "type": "string", "description": "替换后的文字" }
+  },
+  "errors": [
+    { "code": "missing_placeholder", "when": "接了 value，但模板里没有 {value}" }
+  ],
+  "examples": [
+    { "title": "数字加说明", "input": { "template": "分数：{value}", "value": 85 }, "output": { "text": "分数：85" } },
+    { "title": "真假转文字", "input": { "template": "网页能打开吗？{value}", "value": true }, "output": { "text": "网页能打开吗？是" } },
+    { "title": "列表转文字", "input": { "value": ["a", "b"] }, "output": { "text": "[\"a\", \"b\"]" } },
+    { "title": "固定文字（不接 value）", "input": { "template": "没找到" }, "output": { "text": "没找到" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

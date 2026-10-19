@@ -1,0 +1,22 @@
+{
+  "name": "workflow-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "node --test tests/review_fixes.test.mjs tests/recheck_fixes.test.mjs tests/audit3_fixes.test.mjs tests/efficiency_fixes.test.mjs tests/contracts.test.mjs tests/ui.test.mjs tests/genlog.test.mjs tests/edit.test.mjs tests/library.test.mjs tests/collide.test.mjs",
+    "e2e": "node tests/e2e.mjs"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "3.1.1",
+    "@xyflow/react": "12.12.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.1.2",
+    "vite": "8.3.4"
+  }
+}

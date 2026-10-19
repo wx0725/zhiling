@@ -1,0 +1,27 @@
+{
+  "id": "logic.compare",
+  "version": "0.1.0",
+  "name": "比较",
+  "description": "按指定方式比较两个值，输出真或假，通常接到条件分支（if）的 condition。支持：eq 等于、ne 不等于、gt 大于、ge 大于等于、lt 小于、le 小于等于、contains 包含（文本或列表）、starts_with 以…开头（文本）、empty 为空（只看 a，忽略 b）。大小比较只用于数字。",
+  "category": "逻辑",
+  "side_effects": "none",
+  "inputs": {
+    "a":  { "label": "左边", "type": "any",    "required": true,  "description": "左边的值" },
+    "op": { "label": "比较方式", "type": "string", "required": true,  "description": "比较方式：eq ne gt ge lt le contains starts_with empty" },
+    "b":  { "label": "右边", "type": "any",    "required": false, "default": null, "description": "右边的值；op 为 empty 时不需要" }
+  },
+  "outputs": {
+    "result": { "label": "是否", "type": "boolean", "description": "比较结果" }
+  },
+  "errors": [
+    { "code": "invalid_op",    "when": "op 不在支持的列表里" },
+    { "code": "type_mismatch", "when": "两边类型不能这样比较，例如文本和数字比大小" }
+  ],
+  "examples": [
+    { "title": "状态码是否等于 200", "input": { "a": 200, "op": "eq", "b": 200 }, "output": { "result": true } },
+    { "title": "数字比大小",         "input": { "a": 3, "op": "gt", "b": 5 },     "output": { "result": false } },
+    { "title": "文本是否包含关键词", "input": { "a": "Example Domain", "op": "contains", "b": "Domain" }, "output": { "result": true } },
+    { "title": "文本是否为空",       "input": { "a": "", "op": "empty" },         "output": { "result": true } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

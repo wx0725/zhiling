@@ -1,0 +1,26 @@
+{
+  "spec": "0.1",
+  "id": "translate_list",
+  "name": "逐句翻译",
+  "intent": "给我一组中文句子，逐句翻译成英文，输出英文列表",
+  "inputs":  { "sentences":    { "type": "list<string>", "description": "中文句子列表" } },
+  "outputs": { "translations": { "type": "list<string>", "description": "对应的英文" } },
+  "nodes": [
+    { "id": "each", "kind": "foreach", "max_items": 50,
+      "body": {
+        "inputs":  { "item":   { "type": "string", "description": "当前句子" } },
+        "outputs": { "result": { "type": "string", "description": "这一句的英文" } },
+        "nodes": [
+          { "id": "translate", "kind": "module", "module": "llm.think@0", "config": { "instruction": "把下面这句话翻译成英文，只输出译文" } }
+        ],
+        "edges": [
+          { "from": "$in.item",         "to": "translate.text" },
+          { "from": "translate.answer", "to": "$out.result" }
+        ]
+      } }
+  ],
+  "edges": [
+    { "from": "$in.sentences", "to": "each.items" },
+    { "from": "each.results",  "to": "$out.translations" }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "file.read",
+  "version": "0.1.0",
+  "name": "读取文件",
+  "description": "读取本机上的一个文本类文件，输出文件里的文字。支持 .txt .md .csv .tsv .json .log .xml .html .htm .yaml .yml；不支持 PDF、Word、Excel、图片等需要专门解析的文件。编码自动识别 UTF-8 和 GBK。CSV 也只是原样读成文字，不拆成表格（需要按行处理可接拆分文字）。只读不改。",
+  "category": "获取",
+  "side_effects": "read",
+  "inputs": {
+    "path":      { "label": "文件", "type": "file",    "required": true,  "description": "文件路径，例如 E:\\资料\\笔记.txt；相对路径从工作流项目目录算起" },
+    "max_chars": { "label": "最多字数", "type": "integer", "required": false, "default": 200000, "description": "最多读取的字数，超出部分丢弃" }
+  },
+  "outputs": {
+    "text": { "label": "文件内容", "type": "string", "description": "文件里的文字" },
+    "name": { "label": "文件名", "type": "string", "description": "文件名（不含目录）" }
+  },
+  "errors": [
+    { "code": "not_found",        "when": "文件不存在，或者是个文件夹" },
+    { "code": "unsupported_type", "when": "不是支持的文本类文件（例如 PDF、Word）" },
+    { "code": "decode_error",     "when": "既不是 UTF-8 也不是 GBK 编码，读不出文字" },
+    { "code": "bad_path",          "when": "路径含空字符（NUL）或 Windows 保留设备名（CON、NUL、COM1 等）" }
+  ],
+  "examples": [
+    { "title": "读取文本文件", "input": { "path": "E:\\资料\\笔记.txt" },
+      "output": { "text": "今天完成了三件事：……", "name": "笔记.txt" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 30 }
+}

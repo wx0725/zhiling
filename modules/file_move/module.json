@@ -1,0 +1,40 @@
+{
+  "id": "file.move",
+  "version": "0.1.0",
+  "name": "移动文件",
+  "description": "把一个文件移动到另一个文件夹，或者改名（也可以同时做），输出文件的新位置和新文件名。to_folder 写目标文件夹，留空表示还在原来的文件夹（只改名）；写相对路径时相对源文件所在的文件夹，例如写“2025-03”就是源文件旁边的 2025-03 子文件夹。new_name 写新文件名，留空表示不改名；新名字里没写扩展名（没有点）时沿用原来的扩展名。目标文件夹不存在时默认自动创建（make_folder 设为假则报错）。目标位置已有同名文件时按 if_exists 处理：error 报错不动（默认）、overwrite 覆盖旧文件、rename 自动在名字后加序号如“发票 (1).pdf”。只能移动文件，不能移动文件夹，也不能复制（原位置的文件会消失）。会改动你电脑上的文件，所以每次运行前都要你确认；生成时的运行检查只演练、不真的移动。典型接法：列出文件 → 逐项循环（里面：取字段或查找匹配得到月份 → 本模块移到对应月份文件夹），就能“批量重命名”“按月份归档发票”。",
+  "category": "输出",
+  "side_effects": "write",
+  "inputs": {
+    "source":      { "label": "文件", "type": "file", "required": true, "description": "要移动或改名的文件，例如 E:\\下载\\发票.pdf；相对路径从工作流项目目录算起" },
+    "to_folder":   { "label": "移到", "type": "string", "required": false, "default": "", "description": "目标文件夹，例如 E:\\资料\\发票\\2025-03；留空表示不移动；相对路径相对源文件所在文件夹" },
+    "new_name":    { "label": "新名字", "type": "string", "required": false, "default": "", "description": "新文件名，例如 3月电费.pdf；留空表示不改名；不写扩展名则沿用原来的" },
+    "make_folder": { "label": "建文件夹", "type": "boolean", "required": false, "default": true, "description": "目标文件夹不存在时是否自动创建" },
+    "if_exists":   { "label": "已存在时", "type": "string", "required": false, "default": "error", "description": "目标已有同名文件时：error 报错、overwrite 覆盖、rename 加序号" }
+  },
+  "outputs": {
+    "path": { "label": "新位置", "type": "file", "description": "文件现在的完整路径" },
+    "name": { "label": "新文件名", "type": "string", "description": "文件现在的名字（不含目录）" }
+  },
+  "errors": [
+    { "code": "not_found", "when": "源文件不存在，或者源路径是个文件夹" },
+    { "code": "exists", "when": "目标位置已有同名文件且 if_exists 为 error" },
+    { "code": "no_folder", "when": "目标文件夹不存在且 make_folder 为假" },
+    { "code": "bad_name", "when": "新文件名或文件夹名里有不允许的字符（\\ / : * ? \" < > |），或以点、空格结尾" },
+    { "code": "invalid_option", "when": "if_exists 不是 error、overwrite、rename 之一" },
+    { "code": "move_failed", "when": "没有权限、文件正被别的程序占用、目标是同名文件夹等原因移动不了" },
+    { "code": "bad_path", "when": "源路径含空字符（NUL）或 Windows 保留设备名（CON、NUL、COM1 等）" }
+  ],
+  "examples": [
+    { "title": "把发票移到月份文件夹（不存在就建）",
+      "input": { "source": "D:\\下载\\电费.pdf", "to_folder": "D:\\资料\\发票\\2025-03" },
+      "output": { "path": "D:\\资料\\发票\\2025-03\\电费.pdf", "name": "电费.pdf" } },
+    { "title": "只改名，扩展名沿用原来的",
+      "input": { "source": "D:\\下载\\IMG_0012.jpg", "new_name": "毕业照" },
+      "output": { "path": "D:\\下载\\毕业照.jpg", "name": "毕业照.jpg" } },
+    { "title": "目标已有同名文件时自动加序号",
+      "input": { "source": "D:\\下载\\合同.pdf", "to_folder": "D:\\资料", "if_exists": "rename" },
+      "output": { "path": "D:\\资料\\合同 (1).pdf", "name": "合同 (1).pdf" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 60, "dry_run": "module.py:dry_run" }
+}

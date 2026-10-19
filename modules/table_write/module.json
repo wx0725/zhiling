@@ -1,0 +1,35 @@
+{
+  "id": "table.write",
+  "version": "0.1.0",
+  "name": "写入表格",
+  "description": "把“行列表”（每一行是一个对象 {表头: 值}，例如读取表格的 rows）保存成 .csv 表格文件，输出实际保存的完整路径和写了几行。用 UTF-8 带 BOM 编码保存，Excel 双击就能打开，中文不乱码。表头取所有行出现过的键，按第一次出现的顺序；某行缺的列留空。真假值写成“是/否”，列表和对象写成 JSON 文字。相对路径保存在工作流项目的 outputs 文件夹里，例如写 汇总.csv 就存到 outputs\\汇总.csv；文件夹不存在会自动创建。文件已存在时按 if_exists 处理：error 报错不覆盖（默认）、overwrite 覆盖、append 加在末尾（沿用原文件的表头和编码，新行有原表头里没有的列会报错）。只能保存 .csv，不能直接写 .xlsx。会改动你电脑上的文件，所以每次运行前都要你确认；生成时的运行检查只演练、不真的写。典型接法：读取表格 → 排序列表 → 本模块；或逐项循环里每项产生一个对象 → 本模块。",
+  "category": "输出",
+  "side_effects": "write",
+  "inputs": {
+    "rows":      { "label": "行列表", "type": "list<object>", "required": true, "description": "要保存的行，每一行是 {表头: 值}，例如 [{\"名字\": \"小王\", \"分数\": 90}]" },
+    "path":      { "label": "保存到", "type": "string", "required": true, "description": "保存到哪里，例如 汇总.csv 或 E:\\资料\\汇总.csv；必须是 .csv" },
+    "if_exists": { "label": "已存在时", "type": "string", "required": false, "default": "error", "description": "文件已存在时：error 报错、overwrite 覆盖、append 追加到末尾" }
+  },
+  "outputs": {
+    "path":  { "label": "保存位置", "type": "string", "description": "实际保存的完整路径" },
+    "count": { "label": "写入行数", "type": "integer", "description": "这次写入了几行数据（不含表头）" }
+  },
+  "errors": [
+    { "code": "exists", "when": "文件已存在且 if_exists 为 error" },
+    { "code": "invalid_option", "when": "if_exists 不是 error、overwrite、append 之一" },
+    { "code": "unsupported_type", "when": "扩展名不是 .csv" },
+    { "code": "not_rows", "when": "rows 里有不是对象的项（说明里会写第几行）" },
+    { "code": "header_mismatch", "when": "追加时新行里有原文件表头没有的列" },
+    { "code": "write_failed", "when": "没有权限、文件正被 Excel 打开、路径不合法等原因写不进去" },
+    { "code": "bad_path", "when": "路径含空字符（NUL）或 Windows 保留设备名（CON、NUL、COM1 等）" }
+  ],
+  "examples": [
+    { "title": "把成绩保存成表格",
+      "input": { "rows": [{ "名字": "小王", "分数": 90 }, { "名字": "小李", "分数": 85, "备注": "补考" }], "path": "D:\\资料\\成绩汇总.csv" },
+      "output": { "path": "D:\\资料\\成绩汇总.csv", "count": 2 } },
+    { "title": "追加到已有的表格末尾",
+      "input": { "rows": [{ "名字": "小张", "分数": 77 }], "path": "D:\\资料\\成绩汇总.csv", "if_exists": "append" },
+      "output": { "path": "D:\\资料\\成绩汇总.csv", "count": 1 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 30, "dry_run": "module.py:dry_run" }
+}

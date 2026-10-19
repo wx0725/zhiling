@@ -1,0 +1,56 @@
+{
+  "$comment": "仅用于约束本地模型的输出格式（Ollama 不支持 allOf/if-then 与递归引用）。正式校验仍以 workflow.schema.json + 校验器为准。",
+  "type": "object",
+  "required": ["spec", "id", "name", "intent", "inputs", "outputs", "nodes", "edges"],
+  "properties": {
+    "spec": { "type": "string", "enum": ["0.2"] },
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "intent": { "type": "string" },
+    "inputs": { "$ref": "#/$defs/ports" },
+    "outputs": { "$ref": "#/$defs/ports" },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } },
+    "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } }
+  },
+  "$defs": {
+    "port": {
+      "type": "object", "required": ["type"],
+      "properties": { "type": { "type": "string" }, "description": { "type": "string" } }
+    },
+    "ports": { "type": "object", "additionalProperties": { "$ref": "#/$defs/port" } },
+    "edge": {
+      "type": "object", "required": ["from", "to"],
+      "properties": { "from": { "type": "string" }, "to": { "type": "string" } }
+    },
+    "inner_node": {
+      "type": "object", "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "enum": ["module", "if", "merge"] },
+        "label": { "type": "string" },
+        "module": { "type": "string" },
+        "config": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "node": {
+      "type": "object", "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "enum": ["module", "if", "merge", "foreach"] },
+        "label": { "type": "string" },
+        "module": { "type": "string" },
+        "config": { "type": "object", "additionalProperties": true },
+        "max_items": { "type": "integer" },
+        "body": {
+          "type": "object", "required": ["inputs", "outputs", "nodes", "edges"],
+          "properties": {
+            "inputs": { "$ref": "#/$defs/ports" },
+            "outputs": { "$ref": "#/$defs/ports" },
+            "nodes": { "type": "array", "items": { "$ref": "#/$defs/inner_node" } },
+            "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } }
+          }
+        }
+      }
+    }
+  }
+}

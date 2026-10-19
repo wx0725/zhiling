@@ -1,0 +1,30 @@
+{
+  "id": "html.text",
+  "version": "0.1.0",
+  "name": "提取正文",
+  "description": "把网页的 HTML 去掉标签、脚本和样式，只留下人能读到的文字，同时单独取出网页标题。默认把标题放在 text 的第一行，所以“网页内容里有没有某个词”直接查 text 即可；只要正文、不要标题时把 include_title 设为假。通常接在抓取网页后面，再把正文交给思考模块，比直接给整页 HTML 更短、更准。不判断哪部分是“主要内容”，导航、页脚里的文字也会保留。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "html":          { "label": "网页代码", "type": "string",  "required": true,  "description": "网页的 HTML 文本，例如抓取网页的 text" },
+    "include_title": { "label": "带标题", "type": "boolean", "required": false, "default": true, "description": "是否把标题放在 text 的第一行" },
+    "max_chars":     { "label": "最多字数", "type": "integer", "required": false, "default": 50000, "description": "正文最多保留的字数，超出部分丢弃" }
+  },
+  "outputs": {
+    "text":  { "label": "正文", "type": "string", "description": "网页上的文字（默认第一行是标题），段落之间换行" },
+    "title": { "label": "标题", "type": "string", "description": "网页标题（<title> 里的文字），没有则为空" }
+  },
+  "errors": [],
+  "examples": [
+    { "title": "提取示例页面",
+      "input":  { "html": "<html><head><title>Example Domain</title><style>body{color:red}</style></head><body><p>This domain is for use in examples.</p></body></html>" },
+      "output": { "text": "Example Domain\nThis domain is for use in examples.", "title": "Example Domain" } },
+    { "title": "只要正文、不要标题",
+      "input":  { "html": "<title>公告</title><p>明天停水</p>", "include_title": false },
+      "output": { "text": "明天停水", "title": "公告" } },
+    { "title": "去掉脚本",
+      "input":  { "html": "<p>你好<script>alert(1)</script>世界</p>" },
+      "output": { "text": "你好世界", "title": "" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 10 }
+}

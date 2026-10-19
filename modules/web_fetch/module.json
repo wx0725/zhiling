@@ -1,0 +1,34 @@
+{
+  "id": "web.fetch",
+  "version": "0.1.0",
+  "name": "抓取网页",
+  "description": "下载一个网址的内容，返回文本、HTTP 状态码和最终网址（跟随跳转后）。只做下载，不解析、不提取正文、不执行网页脚本。状态码不是 2xx 时不算出错，照常返回，便于后续用条件分支处理。出于安全，默认拒绝访问本机和内网地址（回环、链路本地、私有网段等），跳转的每一跳也校验；确需访问时在 model_settings.json 设 allow_local_fetch: true 或设环境变量 WORKFLOW_ALLOW_LOCAL_FETCH=1。",
+  "category": "获取",
+  "side_effects": "network",
+  "inputs": {
+    "url":       { "label": "网址", "type": "string", "required": true,  "description": "要抓取的网址，必须以 http:// 或 https:// 开头" },
+    "timeout_s": { "label": "超时秒", "type": "number", "required": false, "default": 15, "description": "等待响应的超时秒数" },
+    "max_bytes": { "label": "最多字节", "type": "integer", "required": false, "default": 2000000, "description": "最多读取的字节数，超出部分丢弃" }
+  },
+  "outputs": {
+    "text":   { "label": "网页内容", "type": "string",  "description": "返回内容按网页声明的编码解码后的文本" },
+    "status": { "label": "状态码", "type": "integer", "description": "HTTP 状态码，例如 200、404" },
+    "url":    { "label": "最终网址", "type": "string",  "description": "跟随跳转后的最终网址" }
+  },
+  "errors": [
+    { "code": "invalid_url",        "when": "网址不是 http:// 或 https:// 开头" },
+    { "code": "blocked_address",    "when": "目标或跳转指向本机/内网地址，且未打开 allow_local_fetch" },
+    { "code": "timeout",            "when": "超过 timeout_s 仍无响应" },
+    { "code": "network",            "when": "无法连接、域名解析失败等网络错误" },
+    { "code": "too_many_redirects", "when": "跳转次数过多（超过 5 次）" }
+  ],
+  "examples": [
+    { "title": "抓取一个正常页面",
+      "input":  { "url": "https://example.com" },
+      "output": { "status": 200, "url": "https://example.com", "text": "<!doctype html><html><head><title>Example Domain</title>…" } },
+    { "title": "页面不存在时照常返回状态码",
+      "input":  { "url": "https://example.com/not-found" },
+      "output": { "status": 404, "url": "https://example.com/not-found", "text": "…" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 60 }
+}

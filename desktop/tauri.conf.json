@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "工作流",
+  "version": "0.1.0",
+  "identifier": "local.workflow.desktop",
+  "build": { "frontendDist": "loading" },
+  "app": {
+    "windows": [],
+    "security": { "csp": null }
+  },
+  "bundle": { "active": false, "icon": ["icons/icon.png", "icons/icon.ico"] }
+}

@@ -1,0 +1,32 @@
+{
+  "spec": "0.2",
+  "id": "review_summary",
+  "name": "总结网页后请你审核",
+  "intent": "给我一个网址，用三句话中文总结网页内容，总结好后弹窗让我审核：通过就输出这段总结，不通过就输出“总结未通过审核”",
+  "inputs":  { "url":     { "type": "string", "description": "网址" } },
+  "outputs": { "summary": { "type": "string", "description": "审核后的结果" } },
+  "nodes": [
+    { "id": "fetch",   "kind": "module", "module": "web.fetch@0",    "label": "抓取网页" },
+    { "id": "extract", "kind": "module", "module": "html.text@0",    "label": "提取正文" },
+    { "id": "think",   "kind": "module", "module": "llm.think@0",    "label": "总结",
+      "config": { "instruction": "用三句话中文总结以下网页内容" } },
+    { "id": "review",  "kind": "module", "module": "user.confirm@0", "label": "请你审核",
+      "config": { "title": "请审核这段总结", "options": ["通过", "不通过"] } },
+    { "id": "passed",  "kind": "if",     "label": "通过了吗" },
+    { "id": "rejected", "kind": "module", "module": "text.format@0", "label": "未通过的说明",
+      "config": { "template": "总结未通过审核" } },
+    { "id": "join",    "kind": "merge",  "label": "合并" }
+  ],
+  "edges": [
+    { "from": "$in.url",         "to": "fetch.url" },
+    { "from": "fetch.text",      "to": "extract.html" },
+    { "from": "extract.text",    "to": "think.text" },
+    { "from": "think.answer",    "to": "review.detail" },
+    { "from": "review.approved", "to": "passed.condition" },
+    { "from": "think.answer",    "to": "passed.value" },
+    { "from": "passed.then",     "to": "join.a" },
+    { "from": "passed.else",     "to": "rejected" },
+    { "from": "rejected.text",   "to": "join.b" },
+    { "from": "join.value",      "to": "$out.summary" }
+  ]
+}

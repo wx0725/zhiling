@@ -1,0 +1,34 @@
+{
+  "id": "file.list",
+  "version": "0.1.0",
+  "name": "列出文件",
+  "description": "列出一个文件夹里的文件，输出文件完整路径的列表、文件名列表和个数。只列文件，不列文件夹本身。可选：recursive 为真时连子文件夹里的也一起列；extensions 只要某些类型，写成“.pdf,.jpg”或“pdf jpg”（不分大小写）；keyword 只要文件名里含有这些字的（多个词用空格隔开，要同时含有）。结果按路径排序，最多 max_items 个。相对路径从工作流项目目录算起。只读不改。典型接法：本模块 → 逐项循环（里面放读取文件、读取表格或移动文件）→ 合成文字，就能“批量处理一个文件夹”；只想知道有几个文件直接用 count。",
+  "category": "获取",
+  "side_effects": "read",
+  "inputs": {
+    "folder":     { "label": "文件夹", "type": "string", "required": true, "description": "要列的文件夹，例如 E:\\资料\\发票；相对路径从工作流项目目录算起" },
+    "recursive":  { "label": "子文件夹", "type": "boolean", "required": false, "default": false, "description": "为真时连子文件夹里的文件也列出来" },
+    "extensions": { "label": "文件类型", "type": "string", "required": false, "default": "", "description": "只要这些扩展名，例如 .pdf,.jpg；留空表示所有文件" },
+    "keyword":    { "label": "名字含有", "type": "string", "required": false, "default": "", "description": "只要文件名里含有这些字的，例如 发票；多个词用空格隔开；留空表示不限" },
+    "max_items":  { "label": "最多几个", "type": "integer", "required": false, "default": 1000, "description": "最多列出几个文件，超出的不要" }
+  },
+  "outputs": {
+    "paths": { "label": "文件路径", "type": "list<file>", "description": "文件的完整路径，按路径排序" },
+    "names": { "label": "文件名", "type": "list<string>", "description": "文件名（不含目录），和 paths 一一对应" },
+    "count": { "label": "个数", "type": "integer", "description": "列出了几个文件" }
+  },
+  "errors": [
+    { "code": "not_found", "when": "文件夹不存在或打不开" },
+    { "code": "not_folder", "when": "给的路径是一个文件，不是文件夹" },
+    { "code": "bad_path", "when": "路径含空字符（NUL）或 Windows 保留设备名（CON、NUL、COM1 等）" }
+  ],
+  "examples": [
+    { "title": "列出发票文件夹里的 PDF",
+      "input": { "folder": "D:\\资料\\发票", "extensions": ".pdf" },
+      "output": { "paths": ["D:\\资料\\发票\\3月电费.pdf", "D:\\资料\\发票\\4月房租.pdf"], "names": ["3月电费.pdf", "4月房租.pdf"], "count": 2 } },
+    { "title": "连子文件夹一起找名字含“合同”的文件",
+      "input": { "folder": "D:\\资料", "recursive": true, "keyword": "合同" },
+      "output": { "paths": ["D:\\资料\\2025\\租房合同.docx", "D:\\资料\\劳动合同.pdf"], "names": ["租房合同.docx", "劳动合同.pdf"], "count": 2 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 30 }
+}

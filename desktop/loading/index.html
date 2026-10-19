@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作流</title>
+<style>
+  :root { --canvas: #e9edf0; --ink: #1d2733; --muted: #6b7785; --led: #e8a33d; --bad: #a83232; }
+  html, body { height: 100%; margin: 0; }
+  body { display: grid; place-items: center; background: var(--canvas); color: var(--ink);
+         font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", sans-serif; }
+  .box { text-align: center; }
+  .led { width: 14px; height: 14px; border-radius: 50%; background: var(--led); margin: 0 auto 18px;
+         box-shadow: 0 0 0 5px rgba(232, 163, 61, .25), 0 0 12px rgba(232, 163, 61, .8); animation: pulse 1s ease-in-out infinite; }
+  .led.bad { background: #d64545; box-shadow: 0 0 10px rgba(214, 69, 69, .8); animation: none; }
+  h1 { font-size: 20px; font-weight: 650; margin: 0 0 6px; }
+  p { margin: 0; color: var(--muted); }
+  p.bad { color: var(--bad); white-space: pre-wrap; max-width: 60ch; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(232, 163, 61, .06), 0 0 4px rgba(232, 163, 61, .5); } }
+  @media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="led" id="led"></div>
+    <h1>工作流</h1>
+    <p id="msg">正在启动本地服务…</p>
+  </div>
+  <script>
+    // 桌面程序在服务出错时调用它显示原因
+    window.showError = (text) => {
+      document.getElementById("led").className = "led bad";
+      const m = document.getElementById("msg");
+      m.className = "bad";
+      m.textContent = text;
+    };
+  </script>
+</body>
+</html>

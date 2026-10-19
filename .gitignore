@@ -1,0 +1,30 @@
+.venv/
+__pycache__/
+*.pyc
+tests/_tmp_*
+runs/
+workflows/
+outputs/
+web/node_modules/
+web/dist/
+web/.npm-cache/
+
+# 桌面程序
+desktop/target/
+desktop/gen/
+desktop/server.log
+projects/
+
+# 原生桌面版
+native/dist/
+native/build/
+native/server.log
+
+# 选用的生成模型（可能含自己添的 API 地址）
+model_settings.json
+
+# 评测结果是产物，不进仓库
+evals/results/
+
+# 本机私人笔记（不公开）
+.local/

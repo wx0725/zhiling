@@ -1,0 +1,32 @@
+{
+  "spec": "0.2",
+  "id": "overall_summary",
+  "name": "多个网页的整体总结",
+  "intent": "给我一组网址，逐个抓取总结后，把所有总结合并成一段整体总结输出",
+  "inputs":  { "urls":    { "type": "list<string>", "description": "网址列表" } },
+  "outputs": { "summary": { "type": "string",       "description": "整体总结" } },
+  "nodes": [
+    { "id": "each", "kind": "foreach", "max_items": 20, "label": "逐个网址",
+      "body": {
+        "inputs":  { "item":   { "type": "string" } },
+        "outputs": { "result": { "type": "string" } },
+        "nodes": [
+          { "id": "fetch", "kind": "module", "module": "web.fetch@0" },
+          { "id": "summarize", "kind": "module", "module": "llm.think@0", "config": { "instruction": "用一句中文总结以下网页内容，忽略 HTML 标签" } }
+        ],
+        "edges": [
+          { "from": "$in.item",         "to": "fetch.url" },
+          { "from": "fetch.text",       "to": "summarize.text" },
+          { "from": "summarize.answer", "to": "$out.result" }
+        ]
+      } },
+    { "id": "join", "kind": "module", "module": "text.join@0", "label": "合成一段", "config": { "numbered": true } },
+    { "id": "overall", "kind": "module", "module": "llm.think@0", "label": "整体总结", "config": { "instruction": "以下是几个网页各自的一句话总结，请合并成一段通顺的整体总结" } }
+  ],
+  "edges": [
+    { "from": "$in.urls",       "to": "each.items" },
+    { "from": "each.results",   "to": "join.items" },
+    { "from": "join.text",      "to": "overall.text" },
+    { "from": "overall.answer", "to": "$out.summary" }
+  ]
+}

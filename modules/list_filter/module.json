@@ -1,0 +1,26 @@
+{
+  "id": "list.filter",
+  "version": "0.1.0",
+  "name": "筛选列表",
+  "description": "按一组真假值筛选列表：keep 里为真的位置保留 items 的对应项，为假的去掉，顺序不变。两个列表必须一样长。典型用法：先用 foreach 对每一项做判断（例如 logic.compare）得到真假列表，再把原列表和这个真假列表交给本模块，只留下符合条件的项。foreach 本身只能一项对一项，去不掉项，所以“只保留……”的需求要用本模块。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "items": { "label": "列表", "type": "list<any>",     "required": true, "description": "原列表" },
+    "keep":  { "label": "保留哪些", "type": "list<boolean>", "required": true, "description": "与 items 一一对应的真假值，为真的保留" }
+  },
+  "outputs": {
+    "items": { "label": "留下的", "type": "list<any>", "description": "保留下来的项" },
+    "count": { "label": "个数", "type": "integer",   "description": "保留下来的个数" }
+  },
+  "errors": [
+    { "code": "length_mismatch", "when": "items 和 keep 的长度不同" }
+  ],
+  "examples": [
+    { "title": "只留下大于 0 的数", "input": { "items": [3, -1, 5], "keep": [true, false, true] },
+      "output": { "items": [3, 5], "count": 2 } },
+    { "title": "只留下能打开的网址", "input": { "items": ["https://a.com", "https://b.com"], "keep": [false, true] },
+      "output": { "items": ["https://b.com"], "count": 1 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

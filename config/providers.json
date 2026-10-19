@@ -1,0 +1,181 @@
+{
+  "_说明": "可选的云端 API（OpenAI 兼容）和订阅命令行。models 是默认列出的模型，设好密钥后会向提供方查实际可用的；json_mode 为 false 表示不发 response_format；list 为 false 表示不去查模型列表。自己的增改写在 model_settings.json 的 apis / clis 里，不用改这个文件。 console 是到哪里创建 API Key（引导页里告诉使用者）；local 为 true 表示本机服务（LM Studio），不需要密钥、只列实际装着的模型。",
+  "apis": {
+    "deepseek": {
+      "name": "DeepSeek",
+      "base": "https://api.deepseek.com",
+      "key_env": "DEEPSEEK_API_KEY",
+      "models": [
+        "deepseek-flash",
+        "deepseek-v4-pro"
+      ],
+      "extra": {
+        "reasoning_effort": "low"
+      },
+      "console": "https://platform.deepseek.com/api_keys"
+    },
+    "moonshot": {
+      "name": "Kimi API",
+      "base": "https://api.moonshot.cn/v1",
+      "key_env": "MOONSHOT_API_KEY",
+      "models": [
+        "kimi-latest"
+      ],
+      "console": "https://platform.moonshot.cn/console/api-keys"
+    },
+    "zhipu": {
+      "name": "智谱 GLM",
+      "base": "https://open.bigmodel.cn/api/paas/v4",
+      "key_env": "ZHIPU_API_KEY",
+      "models": [
+        "glm-5.3"
+      ],
+      "console": "https://open.bigmodel.cn/usercenter/apikeys"
+    },
+    "zhipu-coding": {
+      "name": "智谱 GLM Coding 套餐",
+      "base": "https://open.bigmodel.cn/api/coding/paas/v4",
+      "key_env": "ZHIPU_API_KEY",
+      "models": [
+        "glm-5.3"
+      ],
+      "console": "https://open.bigmodel.cn/usercenter/apikeys"
+    },
+    "mimo": {
+      "name": "小米 MiMo",
+      "base": "https://api.xiaomimimo.com/v1",
+      "key_env": "MIMO_API_KEY",
+      "models": [
+        "mimo-v2.6-flash",
+        "mimo-v2.6-pro"
+      ],
+      "console": "https://platform.xiaomimimo.com"
+    },
+    "mimo-plan": {
+      "name": "小米 MiMo Token 套餐",
+      "base": "https://token-plan-cn.xiaomimimo.com/v1",
+      "key_env": "MIMO_TOKEN_PLAN_KEY",
+      "models": [
+        "mimo-v2.6-flash",
+        "mimo-v2.6-pro"
+      ],
+      "console": "https://platform.xiaomimimo.com"
+    },
+    "doubao": {
+      "name": "豆包（火山方舟）",
+      "base": "https://ark.cn-beijing.volces.com/api/v3",
+      "key_env": "ARK_API_KEY",
+      "models": [
+        "doubao-seed-2-1-pro-260628"
+      ],
+      "console": "https://console.volcengine.com/ark"
+    },
+    "qwen": {
+      "name": "通义千问（阿里云百炼）",
+      "base": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "key_env": "DASHSCOPE_API_KEY",
+      "models": [
+        "qwen-plus"
+      ],
+      "console": "https://bailian.console.aliyun.com"
+    },
+    "grok": {
+      "name": "Grok（xAI）",
+      "base": "https://api.x.ai/v1",
+      "key_env": "XAI_API_KEY",
+      "models": [
+        "grok-4.3"
+      ],
+      "console": "https://console.x.ai"
+    },
+    "gemini": {
+      "name": "Gemini",
+      "base": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "key_env": "GEMINI_API_KEY",
+      "models": [
+        "gemini-3.8-flash"
+      ],
+      "console": "https://aistudio.google.com/apikey"
+    },
+    "openai": {
+      "name": "OpenAI",
+      "base": "https://api.openai.com/v1",
+      "key_env": "OPENAI_API_KEY",
+      "models": [
+        "gpt-5.5"
+      ],
+      "console": "https://platform.openai.com/api-keys"
+    },
+    "anthropic": {
+      "name": "Claude API",
+      "base": "https://api.anthropic.com/v1",
+      "key_env": "ANTHROPIC_API_KEY",
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "json_mode": false,
+      "console": "https://console.anthropic.com/settings/keys"
+    },
+    "openrouter": {
+      "name": "OpenRouter（多家模型）",
+      "base": "https://openrouter.ai/api/v1",
+      "key_env": "OPENROUTER_API_KEY",
+      "models": [
+        "deepseek/deepseek-v4-pro"
+      ],
+      "list": false,
+      "console": "https://openrouter.ai/keys"
+    },
+    "lmstudio": {
+      "name": "LM Studio",
+      "base": "http://127.0.0.1:1234/v1",
+      "key_env": "LMSTUDIO_API_KEY",
+      "local": true,
+      "models": []
+    }
+  },
+  "clis": {
+    "kimi": {
+      "name": "Kimi 订阅（Kimi Code）",
+      "exe": "kimi",
+      "args": [
+        "-p",
+        "{prompt}",
+        "--output-format",
+        "text"
+      ],
+      "login": "在命令行运行 kimi，输入 /login 用 Kimi 账号登录"
+    },
+    "codex": {
+      "name": "ChatGPT 订阅（Codex）",
+      "exe": "codex",
+      "args": [
+        "exec",
+        "--skip-git-repo-check",
+        "-s",
+        "read-only",
+        "-"
+      ],
+      "stdin": true,
+      "login": "在命令行运行 codex login"
+    },
+    "claude": {
+      "name": "Claude 订阅（Claude Code）",
+      "exe": "claude",
+      "args": [
+        "-p"
+      ],
+      "stdin": true,
+      "login": "在命令行运行 claude 并登录"
+    },
+    "gemini": {
+      "name": "Gemini 订阅（Gemini CLI）",
+      "exe": "gemini",
+      "args": [
+        "-p",
+        "{prompt}"
+      ],
+      "login": "在命令行运行 gemini，用 Google 账号登录"
+    }
+  }
+}

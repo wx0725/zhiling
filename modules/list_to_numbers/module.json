@@ -1,0 +1,26 @@
+{
+  "id": "list.to_numbers",
+  "version": "0.1.0",
+  "name": "转数字列表",
+  "description": "把一个列表里的每一项都转成数字，输出数字列表 values 和个数 count，之后可以接列表统计求和、求平均，或接排序列表。每一项的认法和“转成数字”（text.to_number）一样：千分位“1,234.5”、货币符号或单位“￥12”“12元”、负数“-3”、百分数“50%”（percent 为真时转成 0.5）、“3.5万”；本身已经是数字的原样保留。某一项转不了时默认报 not_number 并说明是第几项（从 1 数起）；把 skip_bad 设为真则悄悄跳过这些项（count 会变少）。只转一个值请用“转成数字”。典型接法：拆分文字或读取表格得到一列价格文字 → 本模块 → 列表统计。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "items":    { "label": "列表", "type": "list<any>", "required": true, "description": "要转成数字的列表，例如 [\"￥12\", \"1,234\", \"50%\"]" },
+    "percent":  { "label": "百分比", "type": "boolean", "required": false, "default": true, "description": "带 % 的文字怎么转：为真时 50% → 0.5（默认），为假时 50% → 50" },
+    "skip_bad": { "label": "跳过坏项", "type": "boolean", "required": false, "default": false, "description": "为真时跳过转不了的项；为假时（默认）遇到就报错" }
+  },
+  "outputs": {
+    "values": { "label": "数字列表", "type": "list<number>", "description": "转出来的数字，按原顺序" },
+    "count":  { "label": "个数", "type": "integer", "description": "转出来几个数字" }
+  },
+  "errors": [
+    { "code": "not_number", "when": "某一项不是能认出的数字，且 skip_bad 为假；说明里会写第几项" }
+  ],
+  "examples": [
+    { "title": "一列价格文字转成数字", "input": { "items": ["￥12", "1,234.5", "8元"] }, "output": { "values": [12, 1234.5, 8], "count": 3 } },
+    { "title": "跳过转不了的项", "input": { "items": ["90", "缺考", "85.5"], "skip_bad": true }, "output": { "values": [90, 85.5], "count": 2 } },
+    { "title": "百分数", "input": { "items": ["50%", "12.5%"] }, "output": { "values": [0.5, 0.125], "count": 2 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

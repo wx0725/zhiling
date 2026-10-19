@@ -1,0 +1,29 @@
+{
+  "id": "data.get",
+  "version": "0.1.0",
+  "name": "取字段",
+  "description": "从一个对象里按路径取出一个值。data 可以是对象，也可以是 JSON 格式的文字（会先解析）。路径用点分隔，列表用数字下标，从 0 开始，例如 user.name、items.0.price。取到的值保持原来的类型（数字还是数字）；取不到时输出 default（默认为空）并把 found 设为假，不算出错。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "data":    { "label": "数据", "type": "any",    "required": true,  "description": "对象、列表，或 JSON 格式的文字" },
+    "path":    { "label": "字段路径", "type": "string", "required": true,  "description": "字段路径，例如 user.name 或 items.0.price；空字符串表示整个值" },
+    "default": { "label": "默认值", "type": "any",    "required": false, "default": null, "description": "取不到时输出的值" }
+  },
+  "outputs": {
+    "value": { "label": "取到的值", "type": "any",     "description": "取到的值" },
+    "found": { "label": "是否取到", "type": "boolean", "description": "是否取到了" }
+  },
+  "errors": [
+    { "code": "invalid_json", "when": "data 是文字，但不是合法的 JSON" }
+  ],
+  "examples": [
+    { "title": "从 JSON 文字里取数字", "input": { "data": "{\"user\": {\"name\": \"小王\", \"age\": 30}}", "path": "user.age" },
+      "output": { "value": 30, "found": true } },
+    { "title": "取列表里的一项", "input": { "data": { "items": [{ "price": 5 }, { "price": 8 }] }, "path": "items.1.price" },
+      "output": { "value": 8, "found": true } },
+    { "title": "取不到时用默认值", "input": { "data": { "a": 1 }, "path": "b", "default": "无" },
+      "output": { "value": "无", "found": false } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

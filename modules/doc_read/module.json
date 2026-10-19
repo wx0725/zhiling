@@ -1,0 +1,31 @@
+{
+  "id": "doc.read",
+  "version": "0.1.0",
+  "name": "读取Word",
+  "description": "读取本机上的 Word 文档（.docx），输出正文文字和文件名。每个段落一行；表格按行输出，同一行的各个单元格用制表符隔开（单元格里有多段时用空格连起来）。只读正文：页眉页脚、批注、脚注、图片里的字、文本框之外的艺术字不读；修订里被删掉的文字不读。不支持旧版 .doc（请在 Word 里另存为 .docx）、不支持 PDF、WPS 的 .wps，也不支持加密的文档。只读不改。典型接法：本模块 → 思考（总结、提取要点）→ 写入文件；或 列出文件 → 逐项循环（里面放本模块）批量读一个文件夹的 Word。",
+  "category": "获取",
+  "side_effects": "read",
+  "inputs": {
+    "path":      { "label": "文件", "type": "file", "required": true, "description": "Word 文件路径，例如 E:\\资料\\通知.docx；相对路径从工作流项目目录算起" },
+    "max_chars": { "label": "最多字数", "type": "integer", "required": false, "default": 200000, "description": "最多输出的字数，超出部分丢弃" }
+  },
+  "outputs": {
+    "text": { "label": "文档内容", "type": "string", "description": "文档正文的文字，段落之间换行" },
+    "name": { "label": "文件名", "type": "string", "description": "文件名（不含目录）" }
+  },
+  "errors": [
+    { "code": "not_found", "when": "文件不存在，或者是个文件夹" },
+    { "code": "unsupported_type", "when": "不是 .docx 文件（例如旧版 .doc、PDF）" },
+    { "code": "bad_file", "when": "文件损坏、被加密、不是真正的 Word 文件，或含危险结构（DOCTYPE/ENTITY、解压炸弹）被拒" },
+    { "code": "bad_path", "when": "路径含空字符（NUL）或 Windows 保留设备名（CON、NUL、COM1 等）" }
+  ],
+  "examples": [
+    { "title": "读一份带表格的通知",
+      "input": { "path": "D:\\资料\\通知.docx" },
+      "output": { "text": "关于放假的通知\n全体同事：\t国庆放假七天。\n日期\t安排\n10月1日\t放假", "name": "通知.docx" } },
+    { "title": "只要前 7 个字",
+      "input": { "path": "D:\\资料\\通知.docx", "max_chars": 7 },
+      "output": { "text": "关于放假的通知", "name": "通知.docx" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 30 }
+}

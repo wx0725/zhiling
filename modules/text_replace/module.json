@@ -1,0 +1,31 @@
+{
+  "id": "text.replace",
+  "version": "0.1.0",
+  "name": "替换文字",
+  "description": "把一段文字里的某段文字换成另一段，输出替换后的文字和替换了几处。默认全部替换；all 设为假则只换第一处。replace_with 留空就是删掉要找的文字。默认按字面找；regex 设为真时 find 按正则表达式理解（例如 \\s+ 表示连续空白、\\d+ 表示一串数字），replace_with 里可以用 \\1 引用第 1 组括号匹配到的内容。ignore_case 为真时不分大小写。一处都没找到不算错，原样输出、count 为 0。只能替换一个模块里的一段文字，要处理一列文字请放进逐项循环。典型接法：提取正文 → 本模块去掉多余空行 → 思考。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "text":         { "label": "文字", "type": "string", "required": true, "description": "要处理的文字" },
+    "find":         { "label": "找什么", "type": "string", "required": true, "description": "要被换掉的文字（regex 为真时是正则表达式）" },
+    "replace_with": { "label": "换成", "type": "string", "required": false, "default": "", "description": "换成什么；留空表示删掉" },
+    "all":          { "label": "全部替换", "type": "boolean", "required": false, "default": true, "description": "为真时（默认）替换所有地方，为假时只换第一处" },
+    "regex":        { "label": "用正则", "type": "boolean", "required": false, "default": false, "description": "为真时 find 按正则表达式理解" },
+    "ignore_case":  { "label": "忽略大小写", "type": "boolean", "required": false, "default": false, "description": "为真时查找不区分英文字母大小写" }
+  },
+  "outputs": {
+    "text":  { "label": "结果", "type": "string", "description": "替换后的文字" },
+    "count": { "label": "替换处数", "type": "integer", "description": "一共替换了几处，没找到时为 0" }
+  },
+  "errors": [
+    { "code": "empty_find", "when": "find 是空文字" },
+    { "code": "bad_pattern", "when": "regex 为真但正则表达式写错了，或 replace_with 引用了不存在的分组" }
+  ],
+  "examples": [
+    { "title": "把逗号全部换成顿号", "input": { "text": "苹果,香蕉,橙子", "find": ",", "replace_with": "、" }, "output": { "text": "苹果、香蕉、橙子", "count": 2 } },
+    { "title": "只换第一处", "input": { "text": "第1次，第2次", "find": "次", "replace_with": "回", "all": false }, "output": { "text": "第1回，第2次", "count": 1 } },
+    { "title": "用正则把连续空白合成一个空格", "input": { "text": "你好   世界\n\n再见", "find": "\\s+", "replace_with": " ", "regex": true }, "output": { "text": "你好 世界 再见", "count": 2 } },
+    { "title": "删掉一段文字", "input": { "text": "价格：100元（含税）", "find": "（含税）" }, "output": { "text": "价格：100元", "count": 1 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

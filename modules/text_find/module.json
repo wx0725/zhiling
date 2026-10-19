@@ -1,0 +1,30 @@
+{
+  "id": "text.find",
+  "version": "0.1.0",
+  "name": "查找匹配",
+  "description": "在一段文字里找出所有符合规则的片段，输出文字列表和个数。pattern 可以写现成的规则名：email 邮箱、url 网址、number 数字（含小数和负号）、phone 中国大陆手机号；也可以写正则表达式。默认去掉重复项、保持首次出现的顺序。找到的数字也是文字，不能直接做加减。不调用模型，结果固定。",
+  "category": "处理",
+  "side_effects": "none",
+  "inputs": {
+    "text":        { "label": "文字", "type": "string",  "required": true,  "description": "要查找的文字" },
+    "pattern":     { "label": "规则", "type": "string",  "required": true,  "description": "规则名 email / url / number / phone，或正则表达式" },
+    "unique":      { "label": "去重", "type": "boolean", "required": false, "default": true, "description": "是否去掉重复项" },
+    "ignore_case": { "label": "忽略大小写", "type": "boolean", "required": false, "default": false, "description": "正则表达式是否忽略大小写" }
+  },
+  "outputs": {
+    "matches": { "label": "找到的", "type": "list<string>", "description": "找到的片段，按出现顺序" },
+    "count":   { "label": "个数", "type": "integer",      "description": "找到的个数" }
+  },
+  "errors": [
+    { "code": "invalid_pattern", "when": "正则表达式写错了" }
+  ],
+  "examples": [
+    { "title": "找出邮箱", "input": { "text": "联系 a@example.com 或 b@test.org，重复 a@example.com", "pattern": "email" },
+      "output": { "matches": ["a@example.com", "b@test.org"], "count": 2 } },
+    { "title": "找出数字", "input": { "text": "价格 12.5 元，库存 -3 件", "pattern": "number" },
+      "output": { "matches": ["12.5", "-3"], "count": 2 } },
+    { "title": "自定义正则", "input": { "text": "订单 A123、B45", "pattern": "[A-Z]\\d+" },
+      "output": { "matches": ["A123", "B45"], "count": 2 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 10 }
+}

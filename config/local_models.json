@@ -1,0 +1,24 @@
+{
+  "_说明": "引导页“检测电脑”推荐的本地模型目录，由开发者维护。都通过 Ollama 安装（tag 即 ollama pull 的名字）。download 是下载大小（GB），vram 是完全放进显存运行大约要多少显存（GB，含上下文），ram 是只用处理器运行时大约要多少内存（GB）。按能力从低到高排列；min 为 true 的是能胜任需求整理和模块选择的最小档。",
+  "runtime": {
+    "name": "Ollama",
+    "about": "运行本地模型的免费开源工具",
+    "windows_installer": "https://ollama.com/download/OllamaSetup.exe",
+    "signer": "Ollama Inc.",
+    "download_page": "https://ollama.com/download"
+  },
+  "models": [
+    {"tag": "qwen3:4b", "name": "Qwen3 4B", "params": "4B", "quant": "Q4_K_M", "download": 2.5, "vram": 4.5, "ram": 6,
+     "context": "40K", "source": "https://ollama.com/library/qwen3", "min": true,
+     "good_for": "简单的需求整理和模块选择"},
+    {"tag": "qwen3:8b", "name": "Qwen3 8B", "params": "8B", "quant": "Q4_K_M", "download": 5.2, "vram": 7, "ram": 10,
+     "context": "40K", "source": "https://ollama.com/library/qwen3",
+     "good_for": "日常的需求理解和工作流生成"},
+    {"tag": "qwen3:14b", "name": "Qwen3 14B", "params": "14B", "quant": "Q4_K_M", "download": 9.3, "vram": 11.5, "ram": 16,
+     "context": "40K", "source": "https://ollama.com/library/qwen3",
+     "good_for": "较复杂需求的理解和模块组合，出错更少"},
+    {"tag": "qwen3:30b", "name": "Qwen3 30B-A3B", "params": "30B（每次只用 3B）", "quant": "Q4_K_M", "download": 19,
+     "vram": 21, "ram": 24, "context": "40K", "source": "https://ollama.com/library/qwen3",
+     "good_for": "复杂工作流的理解和拆分，最可靠"}
+  ]
+}

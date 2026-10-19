@@ -1,0 +1,37 @@
+{
+  "id": "user.confirm",
+  "version": "0.1.0",
+  "name": "提醒确认",
+  "description": "运行到这一步时弹出一个提示窗，把事情告诉你并停下来等你回答：可以只是提醒（点“好的”继续）、让你审核一段内容（“通过 / 不通过”）、列一份待办清单让你逐项勾选，或在几个选项里选一个。你点了按钮才继续往下跑。输出你点了哪个按钮、是否同意（点的是第一个按钮）、勾选了哪些待办、填的备注。接在条件分支前面可以做“审核不通过就走另一条路”。在命令行里运行或生成时的运行检查没人可问，按第一个按钮、没有勾选、没有备注继续。不调用模型。",
+  "category": "交互",
+  "side_effects": "none",
+  "interaction": "ask",
+  "inputs": {
+    "title":   { "label": "提醒什么", "type": "string", "required": true, "description": "提示窗的标题，一句话说清要你做什么，例如“请审核这段总结”“今天的待办”" },
+    "detail":  { "label": "内容", "type": "string", "required": false, "default": "", "description": "要给你看的内容或补充说明，例如要审核的文字；可以为空" },
+    "items":   { "label": "待办", "type": "list<string>", "required": false, "default": [], "description": "待办清单，每一项显示成一个可以勾选的条目；不需要就留空" },
+    "options": { "label": "按钮", "type": "list<string>", "required": false, "default": ["好的"], "description": "提示窗底部的按钮，按顺序显示，第一个算“同意”；例如 [\"通过\", \"不通过\"]" },
+    "answer":  { "label": "回答", "type": "object", "required": false, "default": {}, "description": "你在提示窗里的回答，由程序自动填入：{choice 点的按钮, done 勾选的待办, note 备注}；不用手动接" }
+  },
+  "outputs": {
+    "choice":   { "label": "点了哪个", "type": "string", "description": "你点的按钮文字" },
+    "approved": { "label": "是否同意", "type": "boolean", "description": "点的是不是第一个按钮" },
+    "done":     { "label": "勾了哪些", "type": "list<string>", "description": "勾选了的待办，按清单顺序" },
+    "note":     { "label": "备注", "type": "string", "description": "你在备注框里写的话，没写则为空" }
+  },
+  "errors": [
+    { "code": "no_options", "when": "options 是空列表，没有按钮可按" }
+  ],
+  "examples": [
+    { "title": "审核一段总结，点了“通过”",
+      "input":  { "title": "请审核这段总结", "detail": "这是一个用于示例的网页。", "options": ["通过", "不通过"], "answer": { "choice": "通过" } },
+      "output": { "choice": "通过", "approved": true, "done": [], "note": "" } },
+    { "title": "待办清单，勾了两项并留了备注",
+      "input":  { "title": "今天的待办", "items": ["回复邮件", "整理发票", "备份资料"], "answer": { "choice": "好的", "done": ["回复邮件", "备份资料"], "note": "发票明天再弄" } },
+      "output": { "choice": "好的", "approved": true, "done": ["回复邮件", "备份资料"], "note": "发票明天再弄" } },
+    { "title": "没人回答（命令行或运行检查）：按第一个按钮继续",
+      "input":  { "title": "提醒：已经抓完网页" },
+      "output": { "choice": "好的", "approved": true, "done": [], "note": "" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 10 }
+}

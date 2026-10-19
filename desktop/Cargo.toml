@@ -1,0 +1,15 @@
+[package]
+name = "workflow-desktop"
+version = "0.1.0"
+edition = "2021"
+description = "工作流桌面窗口：启动本地服务并在独立窗口里显示界面"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[profile.release]
+opt-level = "s"
+strip = true

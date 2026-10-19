@@ -1,0 +1,36 @@
+{
+  "id": "time.now",
+  "version": "0.1.0",
+  "name": "当前时间",
+  "description": "取这台电脑现在的日期时间，输出按格式写好的文字 text，以及固定格式的日期 date（如 2026-10-19）、年 year、月 month、日 day（都是整数）和中文星期几 weekday（如“星期一”）。format 可选：datetime 日期加时间“2026-10-19 09:30:00”（默认）、date 只要日期“2026-10-19”、time 只要时间“09:30:00”、chinese 中文日期“2026年10月19日”、compact 紧凑日期“20261019”（适合放进文件名），也可以自己写含 % 的格式，例如“%Y年%m月”“%m-%d %H:%M”（%Y 年 %m 月 %d 日 %H 时 %M 分 %S 秒 %y 两位年份 %j 一年中第几天）。offset_days 偏移天数：-1 是昨天、1 是明天、-7 是一周前（时间部分不变）。用的是电脑上设置的本地时区。每次运行结果都不同，不能定时运行。典型接法：本模块的 text → 合成文字 拼出带日期的文件名“日报-20261019.txt” → 写入文件；或 month → 移动文件 按月份归档。",
+  "category": "获取",
+  "side_effects": "none",
+  "inputs": {
+    "format":      { "label": "格式", "type": "string", "required": false, "default": "datetime", "description": "datetime（默认）、date、time、chinese、compact，或含 % 的自定义格式如 %Y年%m月" },
+    "offset_days": { "label": "偏移天数", "type": "integer", "required": false, "default": 0, "description": "在今天的基础上加几天：-1 昨天、0 今天（默认）、1 明天" }
+  },
+  "outputs": {
+    "text":    { "label": "时间文字", "type": "string", "description": "按 format 写好的日期时间文字" },
+    "date":    { "label": "日期", "type": "string", "description": "固定格式的日期，例如 2026-10-19" },
+    "year":    { "label": "年", "type": "integer", "description": "年份，例如 2026" },
+    "month":   { "label": "月", "type": "integer", "description": "月份 1–12" },
+    "day":     { "label": "日", "type": "integer", "description": "几号 1–31" },
+    "weekday": { "label": "星期", "type": "string", "description": "中文星期几，例如 星期一、星期日" }
+  },
+  "errors": [
+    { "code": "invalid_format", "when": "format 不是预设的几种，也不含 %；或用了不认识的 % 代码" },
+    { "code": "bad_offset", "when": "偏移天数太大，超出了能表示的日期范围" }
+  ],
+  "examples": [
+    { "title": "今天的日期（假设现在是 2026-10-19 星期一 09:30:05）",
+      "input": { "format": "date" },
+      "output": { "text": "2026-10-19", "date": "2026-10-19", "year": 2026, "month": 10, "day": 19, "weekday": "星期一" } },
+    { "title": "昨天，写成中文日期（同一时刻）",
+      "input": { "format": "chinese", "offset_days": -1 },
+      "output": { "text": "2026年10月18日", "date": "2026-10-18", "year": 2026, "month": 10, "day": 18, "weekday": "星期日" } },
+    { "title": "自定义格式（同一时刻）",
+      "input": { "format": "%m月%d日 %H:%M" },
+      "output": { "text": "10月19日 09:30", "date": "2026-10-19", "year": 2026, "month": 10, "day": 19, "weekday": "星期一" } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 5 }
+}

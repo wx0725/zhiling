@@ -1,0 +1,24 @@
+{
+  "id": "clipboard.write",
+  "version": "0.1.0",
+  "name": "写剪贴板",
+  "description": "把一段文字放进剪贴板（相当于帮你“复制”了它），之后在任何地方按 Ctrl+V 就能粘贴。输出放进去的字数。剪贴板里原来的内容会被替换掉。只能放文字，不能放图片或文件。目前只支持 Windows。会改动剪贴板，所以每次运行前都要你确认；生成时的运行检查只演练、不真的改剪贴板。典型接法：读剪贴板 → 思考（翻译、改写）→ 本模块；或 合成文字 拼好一段回复 → 本模块。",
+  "category": "输出",
+  "side_effects": "write",
+  "inputs": {
+    "text": { "label": "内容", "type": "string", "required": true, "description": "要放进剪贴板的文字" }
+  },
+  "outputs": {
+    "chars": { "label": "字数", "type": "integer", "description": "放进剪贴板的字数" }
+  },
+  "errors": [
+    { "code": "unsupported_platform", "when": "不是 Windows 系统" },
+    { "code": "clipboard_busy", "when": "剪贴板正被别的程序占用，等了约 1 秒还打不开" },
+    { "code": "write_failed", "when": "文字里有无法放进剪贴板的字符，或系统拒绝写入" }
+  ],
+  "examples": [
+    { "title": "复制一段回复", "input": { "text": "好的，明天上午十点见。" }, "output": { "chars": 11 } },
+    { "title": "复制空文字（清空剪贴板里的文字）", "input": { "text": "" }, "output": { "chars": 0 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 10, "dry_run": "module.py:dry_run" }
+}

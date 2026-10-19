@@ -1,0 +1,35 @@
+{
+  "id": "table.read",
+  "version": "0.1.0",
+  "name": "读取表格",
+  "description": "读取本机上的表格文件（.csv .tsv .xlsx），把第一行当表头，输出“行列表”rows：每一行是一个对象 {表头: 值}，例如 {\"名字\": \"小王\", \"分数\": 90}；另外输出表头列表 headers 和行数 count。CSV 编码自动识别 UTF-8 和 GBK，分隔符自动识别逗号、制表符、分号。xlsx 默认读第一个工作表，sheet 写名字可以读指定的那张。看起来是数字的格子会变成数字（像“007”这样以 0 开头的保持文字），空格子是空文字，整行都空的行会跳过；表头为空的列叫“列3”这样，表头重名的加“_2”。注意：Excel 里的日期会读成一个数字（从 1900 年起算的天数，例如 45000 是 2023-03-15），公式读出的是上次保存时算好的结果。不支持旧版 .xls（请在 Excel 里另存为 .xlsx）、不支持 PDF 和 Word 里的表格，也不支持合并单元格的展开。只读不改。典型接法：本模块 → 排序列表或逐项循环（里面用取字段拿某一列）→ 写入表格或思考。",
+  "category": "获取",
+  "side_effects": "read",
+  "inputs": {
+    "path":     { "label": "文件", "type": "file", "required": true, "description": "表格文件路径，例如 E:\\资料\\成绩.xlsx；相对路径从工作流项目目录算起" },
+    "sheet":    { "label": "工作表", "type": "string", "required": false, "default": "", "description": "xlsx 里要读的工作表名字，例如 Sheet2；留空读第一个；CSV 忽略此项" },
+    "max_rows": { "label": "最多行数", "type": "integer", "required": false, "default": 10000, "description": "最多读多少行数据（不含表头），超出的不要" }
+  },
+  "outputs": {
+    "rows":    { "label": "行列表", "type": "list<object>", "description": "每一行是一个对象，键是表头，值是这一格的内容" },
+    "headers": { "label": "表头", "type": "list<string>", "description": "第一行的表头，按从左到右的顺序" },
+    "count":   { "label": "行数", "type": "integer", "description": "读到几行数据（不含表头）" }
+  },
+  "errors": [
+    { "code": "not_found", "when": "文件不存在，或者是个文件夹" },
+    { "code": "unsupported_type", "when": "不是 .csv .tsv .xlsx 文件（例如旧版 .xls、PDF、Word）" },
+    { "code": "decode_error", "when": "CSV 既不是 UTF-8 也不是 GBK 编码" },
+    { "code": "bad_file", "when": "xlsx 文件损坏、被加密、里面没有工作表，或含危险结构（DOCTYPE/ENTITY、解压炸弹）被拒" },
+    { "code": "no_sheet", "when": "xlsx 里没有 sheet 指定名字的工作表（说明里会列出有哪些）" },
+    { "code": "bad_path", "when": "路径含空字符（NUL）或 Windows 保留设备名（CON、NUL、COM1 等）" }
+  ],
+  "examples": [
+    { "title": "读成绩表（CSV）",
+      "input": { "path": "D:\\资料\\成绩.csv" },
+      "output": { "rows": [{ "名字": "小王", "分数": 90, "学号": "007" }, { "名字": "小李", "分数": 85.5, "学号": "012" }], "headers": ["名字", "分数", "学号"], "count": 2 } },
+    { "title": "读 Excel 里指定的工作表",
+      "input": { "path": "D:\\资料\\账单.xlsx", "sheet": "三月" },
+      "output": { "rows": [{ "项目": "电费", "金额": 120.5 }, { "项目": "房租", "金额": 2000 }], "headers": ["项目", "金额"], "count": 2 } }
+  ],
+  "runtime": { "entry": "module.py:run", "timeout_s": 60 }
+}
