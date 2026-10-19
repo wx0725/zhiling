@@ -21,7 +21,7 @@ python -m venv .venv
 - 或云端模型：在引导页填任一提供方的 API Key（DeepSeek、Kimi、智谱、通义千问、豆包、OpenAI、Claude、Gemini 等，密钥存进系统凭据管理器）。
 - 运行会读或改电脑上文件的工作流时，织灵会先列出来让你确认；抓取网页默认不访问本机和内网地址（需要时在 `model_settings.json` 里写 `"allow_local_fetch": true`）。
 
-想做成双击即开的程序：`.\.venv\Scripts\python.exe -m PyInstaller native\launcher.spec --noconfirm --distpath native\dist --workpath nativeuild`，得到 `native\dist\织灵.exe`（它只是启动器，仍用项目目录里的代码和 `.venv`）。
+想做成双击即开的程序：`.\.venv\Scripts\python.exe -m PyInstaller native\launcher.spec --noconfirm --distpath native\dist --workpath native\build`，得到 `native\dist\织灵.exe`（它只是启动器，仍用项目目录里的代码和 `.venv`）。
 
 ## 桌面程序（原生界面）
 
